@@ -4,18 +4,17 @@ import os
 
 class Colors:
   RED = "\u001b[31m"
+  BRIGHT_RED = "\u001b[91m"
   GREEN = "\u001b[32m"
-  BLUE = "\u001b[34m"
+  BRIGHT_BLUE = "\u001b[94m"
   WHITE = "\u001b[37m"
   RESET = "\u001b[0m"
 
-WHSENDER_LOGO = Colors.BLUE + r"""
-  ___       _______  ______________________   __________________________ 
-  __ |     / /__  / / /_  ___/__  ____/__  | / /__  __ \__  ____/__  __ \
-  __ | /| / /__  /_/ /_____ \__  __/  __   |/ /__  / / /_  __/  __  /_/ /
-  __ |/ |/ / _  __  / ____/ /_  /___  _  /|  / _  /_/ /_  /___  _  _, _/ 
-  ____/|__/  /_/ /_/  /____/ /_____/  /_/ |_/  /_____/ /_____/  /_/ |_|""" + Colors.RESET
-
+WHSENDER_LOGO = rf"""
+{Colors.BRIGHT_RED}   _ _ _ _____ {Colors.BRIGHT_BLUE} _____ _____ _____ ____  _____ _____ 
+{Colors.BRIGHT_RED}  | | | |  |  |{Colors.BRIGHT_BLUE}|   __|   __|   | |    \|   __| __  |
+{Colors.BRIGHT_RED}  | | | |     |{Colors.BRIGHT_BLUE}|__   |   __| | | |  |  |   __|    -|
+{Colors.BRIGHT_RED}  |_____|__|__|{Colors.BRIGHT_BLUE}|_____|_____|_|___|____/|_____|__|__|  by korbol77""" + Colors.RESET
 
 class Commands:
   def error(text):
@@ -49,10 +48,12 @@ if len(sys.argv) == 2:
           print(Commands.success("Command succeeded"))
         else:
           print(Commands.error("Command failed!"))
+      case "$clear":
+        os.system("clear")
 
   while True:
     print(WHSENDER_LOGO)
-    option = input(Colors.BLUE + "\n  a) Webhook Console\n  b) Help\n  c) Exit\n  > " + Colors.RESET)
+    option = input(Colors.BRIGHT_BLUE + "\n  a) Webhook Console\n  b) Help\n  c) Exit\n  > " + Colors.RESET)
 
     match(option):
       case "a":
@@ -72,7 +73,7 @@ if len(sys.argv) == 2:
               "  $send <message> = Sends the specified message via webhook\n"
               "  $delete = Deletes webhook\n"
               "  $exit = Returns to main panel\n"
-              "  Author: korbol77")
+              "  $clear = Clears the console")
       case "c":
         sys.exit()
       case _:
