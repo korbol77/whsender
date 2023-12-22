@@ -2,6 +2,14 @@ import sys
 import requests
 import os
 
+ALL_COMMANDS = ("\n  Commands:\n"
+"  $send <message> = Sends the specified message via webhook\n"
+"  $modify-name <name> = Changes the webhook name to the specified one\n"
+"  $commands = Displays all available commands\n"
+"  $delete = Deletes webhook\n"
+"  $clear = Clears the console\n"
+"  $exit = Returns to main panel")
+
 class Colors:
   RED = "\u001b[31m"
   BRIGHT_RED = "\u001b[91m"
@@ -29,11 +37,10 @@ if len(sys.argv) == 2:
 
   def get_command(command):
     command_type = command.split(" ")[0]
+    command_args = command.split(command_type + " ")
 
     match(command_type):
       case "$send":
-        command_args = command.split(command_type + " ")
-
         if len(command_args) == 2:
           r = requests.post(webhook_url, data={"content": command_args[1]})
           if r.status_code == 204:
@@ -42,21 +49,36 @@ if len(sys.argv) == 2:
             print(Commands.error("Command failed!"))
         else:
           print(Commands.error("The \"send\" command requires the <message> argument!"))
+
+      case "$modify-name":
+        if len(command_args) == 2:
+          r = requests.patch(webhook_url, json={"name": command_args[1]}, headers={"Content-Type": "application/json"})
+          if r.status_code == 200:
+            print(Commands.success("Command succeeded"))
+          else:
+            print(Commands.error("Command failed!"))
+        else:
+          print(Commands.error("The \"modify-name\" command requires the <name> argument!"))
+
+      case "$commands":
+        print(ALL_COMMANDS)
+
       case "$delete":
         r = requests.delete(webhook_url)
         if r.status_code == 204:
           print(Commands.success("Command succeeded"))
         else:
           print(Commands.error("Command failed!"))
+
       case "$clear":
         os.system("clear")
 
   while True:
     print(WHSENDER_LOGO)
-    option = input(Colors.BRIGHT_BLUE + "\n  a) Webhook Console\n  b) Help\n  c) Exit\n  > " + Colors.RESET)
+    option = input(Colors.BRIGHT_BLUE + "\n  1) Webhook Console\n  2) Help\n  3) Exit\n  > " + Colors.RESET)
 
     match(option):
-      case "a":
+      case "1":
         os.system("clear")
 
         while True:
@@ -67,15 +89,14 @@ if len(sys.argv) == 2:
             break
           else:
             get_command(command)
-      case "b":
+
+      case "2":
         os.system("clear")
-        print("\n  Commands:\n"
-              "  $send <message> = Sends the specified message via webhook\n"
-              "  $delete = Deletes webhook\n"
-              "  $exit = Returns to main panel\n"
-              "  $clear = Clears the console")
-      case "c":
+        print(ALL_COMMANDS)
+
+      case "3":
         sys.exit()
+
       case _:
         os.system("clear")
         print("\n" + Commands.error("Invalid choice!"))
