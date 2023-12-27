@@ -7,6 +7,8 @@ import json
 ALL_COMMANDS = ("\n  Commands:\n"
 "  $send <message> = Sends the specified message via webhook\n"
 "  $modify-name <name> = Changes the webhook name to the specified one\n"
+"  $modify-avatar <avatar_url> = Changes the webhook avatar to the specified one\n"
+"  $webhook-details = Displays webhook informations\n"
 "  $commands = Displays all available commands\n"
 "  $delete = Deletes webhook\n"
 "  $clear = Clears the console\n"
