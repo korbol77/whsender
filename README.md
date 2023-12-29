@@ -1,8 +1,8 @@
 # WHSENDER
 
-![](https://i.imgur.com/chYxXq7.png)
+![](https://i.imgur.com/q966nOp.png)
 
-WHSENDER is a simple discord webhook manager written in python.<br><br>
+**WHSENDER** is a Discord webhook manager written in Python.<br><br>
 
 ### Example Of Usage (Linux)
 

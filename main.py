@@ -4,35 +4,36 @@ import os
 import base64
 import json
 
-# os.system("title WHSENDER - Discord Webhook Sender")
-
 if len(sys.argv) == 2:
-  ALL_COMMANDS = ("\n  Commands:\n"
-  "  $send <message> = Sends the specified message via webhook\n"
-  "  $modify-name <name> = Changes the webhook name to the specified one\n"
-  "  $modify-avatar <avatar_url> = Changes the webhook avatar to the specified one\n"
-  "  $message-delete <message_id> = Deletes specified webhook message\n"
-  "  $webhook-details = Displays webhook informations\n"
-  "  $commands = Displays all available commands\n"
-  "  $delete = Deletes webhook\n"
-  "  $clear = Clears the console\n"
-  "  $exit = Returns to main panel")
-
-  WEBHOOK_CONSOLE_INFO = "\n  Webhook Console ~ All commands starts with \"$\" | To exit type \"$exit\""
-
   class Colors:
     RED = "\u001b[31m"
     BRIGHT_RED = "\u001b[91m"
     GREEN = "\u001b[32m"
     BRIGHT_BLUE = "\u001b[94m"
     WHITE = "\u001b[37m"
+    BOLD = "\u001b[1m"
+    RESET_BOLD = "\u001b[22m"
     RESET = "\u001b[0m"
 
-  WHSENDER_LOGO = rf"""
+  ALL_COMMANDS = (f"\n  {Colors.BOLD}Commands:{Colors.RESET_BOLD}\n"
+  "  send <message> = Sends the specified message via webhook\n"
+  "  modify-name <name> = Changes the webhook name to the specified one\n"
+  "  modify-avatar <avatar_url> = Changes the webhook avatar to the specified one\n"
+  "  message-delete <message_id> = Deletes specified webhook message\n"
+  "  webhook-details, webhook-info = Displays webhook informations\n"
+  "  commands, help = Displays all available commands\n"
+  "  delete = Deletes webhook\n"
+  "  clear, cls = Clears the console\n"
+  "  exit = Returns to main panel")
+
+  WEBHOOK_CONSOLE_INFO = f"\n  {Colors.BOLD}Webhook Console{Colors.RESET_BOLD}\n  All commands under \"commands\" or \"help\" | To exit type \"exit\""
+
+  WHSENDER_LOGO = (rf"""
   {Colors.BRIGHT_RED} _ _ _ _____ {Colors.BRIGHT_BLUE} _____ _____ _____ ____  _____ _____ 
   {Colors.BRIGHT_RED}| | | |  |  |{Colors.BRIGHT_BLUE}|   __|   __|   | |    \|   __| __  |
   {Colors.BRIGHT_RED}| | | |     |{Colors.BRIGHT_BLUE}|__   |   __| | | |  |  |   __|    -|
-  {Colors.BRIGHT_RED}|_____|__|__|{Colors.BRIGHT_BLUE}|_____|_____|_|___|____/|_____|__|__|  by korbol77""" + Colors.RESET
+  {Colors.BRIGHT_RED}|_____|__|__|{Colors.BRIGHT_BLUE}|_____|_____|_|___|____/|_____|__|__|  by korbol77"""
+  f"\n\n  {Colors.BRIGHT_RED}<~~~~~~~~~~ [ {Colors.BOLD + Colors.BRIGHT_BLUE}Discord Webhook Manager{Colors.RESET_BOLD + Colors.BRIGHT_RED} ] ~~~~~~~~~~>") + Colors.RESET
 
   class Commands:
     def error(text):
@@ -47,7 +48,8 @@ if len(sys.argv) == 2:
     r = requests.get(webhook_url)
     if r.status_code == 200:
       webhook_details = json.loads(r.text)
-      print(f"\n  Webhook Info:\n    Name: {webhook_details['name']}\n\n  Webhook Owner Info:\n    Name: {webhook_details['user']['username']}")
+      print((f"\n  {Colors.BOLD}Webhook Info:{Colors.RESET_BOLD}\n    Name: {webhook_details['name']}"
+      f"\n\n  {Colors.BOLD}Webhook Owner Info:{Colors.RESET_BOLD}\n    Name: {webhook_details['user']['username']}"))
     else:
       print(Commands.error("Command failed!"))
 
@@ -56,7 +58,7 @@ if len(sys.argv) == 2:
     command_args = command.split(command_type + " ")
 
     match(command_type):
-      case "$send":
+      case "send":
         if len(command_args) == 2:
           r = requests.post(webhook_url, data={"content": command_args[1]})
           if r.status_code == 204:
@@ -66,7 +68,7 @@ if len(sys.argv) == 2:
         else:
           print(Commands.error("The \"send\" command requires the <message> argument!"))
 
-      case "$modify-name":
+      case "modify-name":
         if len(command_args) == 2:
           r = requests.patch(webhook_url, json={"name": command_args[1]}, headers={"Content-Type": "application/json"})
           if r.status_code == 200:
@@ -76,7 +78,7 @@ if len(sys.argv) == 2:
         else:
           print(Commands.error("The \"modify-name\" command requires the <name> argument!"))
 
-      case "$modify-avatar":
+      case "modify-avatar":
         if len(command_args) == 2:
           def get_b64_from_image_url(url):
             r = requests.get(url).content
@@ -92,10 +94,10 @@ if len(sys.argv) == 2:
         else:
           print(Commands.error("The \"modify-avatar\" command requires the <avatar_url> argument!"))
 
-      case "$webhook-details":
+      case "webhook-details" | "webhook-info":
         get_webhook_info()
 
-      case "$message-delete":
+      case "message-delete":
         if len(command_args) == 2:
           r = requests.delete(webhook_url + f"/messages/{command_args[1]}")
           if r.status_code == 204:
@@ -105,19 +107,22 @@ if len(sys.argv) == 2:
         else:
           print(Commands.error("The \"message-delete\" command requires the <message_id> argument!"))
 
-      case "$commands":
+      case "commands" | "help":
         print(ALL_COMMANDS)
 
-      case "$delete":
+      case "delete":
         r = requests.delete(webhook_url)
         if r.status_code == 204:
           print(Commands.success("Command succeeded"))
         else:
           print(Commands.error("Command failed!"))
 
-      case "$clear":
+      case "clear" | "cls":
         os.system("clear")
         print(WEBHOOK_CONSOLE_INFO)
+
+      case _:
+        print(Commands.error("The specified command does not exist!"))
 
   while True:
     print(WHSENDER_LOGO)
@@ -129,9 +134,9 @@ if len(sys.argv) == 2:
         print(WEBHOOK_CONSOLE_INFO)
 
         while True:
-          command = input("\n  Command > ")
+          command = input(f"\n  {Colors.BRIGHT_BLUE}${Colors.RESET} ")
 
-          if command == "$exit":
+          if command == "exit":
             os.system("clear")
             break
           else:
